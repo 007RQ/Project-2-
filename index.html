@@ -141,7 +141,7 @@ h2 { margin-top: 5px; font-size: clamp(29px, 8vw, 42px); letter-spacing: -.05em;
   flex: 1; 
   min-height: 48dvh; 
 }
-/* Аккуратная тонкая вертикальная ось таймлайна */
+
 .day-track::before {
   content: ""; 
   position: absolute; 
@@ -163,7 +163,6 @@ h2 { margin-top: 5px; font-size: clamp(29px, 8vw, 42px); letter-spacing: -.05em;
   transform: translate(-50%, -50%); 
 }
 
-/* Красивые и четкие карточки задач */
 .task-card {
   position: absolute;
   left: 2px; right: 2px;
@@ -178,7 +177,7 @@ h2 { margin-top: 5px; font-size: clamp(29px, 8vw, 42px); letter-spacing: -.05em;
   user-select: none;
   z-index: 3;
 }
-/* Вертикальная цветная полоса-акцент слева */
+
 .task-card::after { 
   content: ""; 
   position: absolute; 
@@ -211,7 +210,6 @@ h2 { margin-top: 5px; font-size: clamp(29px, 8vw, 42px); letter-spacing: -.05em;
   overflow: hidden; 
 }
 
-/* Выполненная задача */
 .task-card.completed { 
   background: rgba(22, 38, 28, 0.7); 
   box-shadow: inset 0 0 0 1px rgba(88,214,123,.18); 
@@ -470,8 +468,7 @@ h2 { margin-top: 5px; font-size: clamp(29px, 8vw, 42px); letter-spacing: -.05em;
   const DAY_NAMES_LONG = ['понедельник','вторник','среда','четверг','пятница','суббота','воскресенье'];
   const MONTHS = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
 
-  const $ = (sel, root = document) => root.querySelector(sel);
-  const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+  const $ = (sel, root = document) => root.querySelector(sel);   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 
   const state = loadState();
   let activeView = 'week';
