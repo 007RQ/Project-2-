@@ -1,542 +1,132 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#111315">
-  <title>План</title>
-<style>
-:root {
-  --bg: #0f1112;
-  --panel: #16191b;
-  --panel-2: #1b1f21;
-  --line: rgba(255,255,255,.07);
-  --text: #f5f6f4;
-  --muted: #939a99;
-  --muted-2: #68706f;
-  --green: #58d67b;
-  --red: #ff6868;
-  --shadow: 0 16px 40px rgba(0,0,0,.24);
-  --radius-xl: 24px;
-  --radius-lg: 18px;
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Inter, system-ui, sans-serif;
-}
-
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { margin: 0; padding: 0; min-height: 100%; background: var(--bg); color: var(--text); }
-body { min-height: 100dvh; overflow-x: hidden; }
-button, input { font: inherit; }
-button { border: 0; color: inherit; cursor: pointer; }
-
-.app-shell {
-  min-height: 100dvh;
-  padding: calc(16px + var(--safe-top)) 14px calc(92px + var(--safe-bottom));
-}
-
-.topbar {
-  max-width: 980px;
-  margin: 0 auto;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 18px;
-  padding: 4px 2px 15px;
-}
-
-.eyebrow {
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: .12em;
-  font-size: 10px;
-  font-weight: 700;
-}
-
-h1, h2, p { margin: 0; }
-h1 { margin-top: 4px; font-size: clamp(26px, 5vw, 36px); letter-spacing: -.03em; line-height: 1.1; }
-h2 { margin-top: 4px; font-size: clamp(24px, 6vw, 32px); letter-spacing: -.03em; }
-
-.live-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.06);
-  color: #dfe3df;
-  font-size: 13px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
-
-.content { max-width: 980px; margin: 0 auto; }
-.view { display: none; }
-.view.is-active { display: block; }
-
-.week-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-.week-range { color: #d9ddda; font-size: 13px; font-weight: 600; }
-.week-hint { color: var(--muted-2); font-size: 11px; }
-
-.week-board-wrap {
-  border-radius: var(--radius-xl);
-  background: #141719;
-  border: 1px solid rgba(255,255,255,.06);
-  overflow: hidden;
-}
-
-.week-board {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  min-height: 520px;
-}
-
-.day-column {
-  position: relative;
-  min-width: 0;
-  border-right: 1px solid rgba(255,255,255,.05);
-  padding: 10px 2px;
-  display: flex;
-  flex-direction: column;
-}
-.day-column:last-child { border-right: 0; }
-.day-column.today {
-  background: rgba(88, 214, 123, 0.04);
-}
-
-.day-head { text-align: center; margin-bottom: 12px; }
-.day-name { color: var(--muted-2); font-size: 10px; font-weight: 700; text-transform: uppercase; }
-.day-number {
-  width: 26px; height: 26px; margin: 4px auto 0;
-  display: grid; place-items: center; border-radius: 50%;
-  font-size: 13px; font-weight: 700; color: #e6eae7;
-}
-.today .day-number { color: #0f1112; background: var(--green); font-weight: 800; }
-
-.day-track { 
-  position: relative; 
-  flex: 1; 
-  min-height: 450px; 
-}
-
-.day-track::before {
-  content: ""; 
-  position: absolute; 
-  left: 50%; 
-  top: 0; 
-  bottom: 0; 
-  width: 1px;
-  background: rgba(255,255,255,.08);
-  transform: translateX(-50%); 
-}
-
-.hour-dot { 
-  position: absolute; 
-  left: 50%; 
-  width: 4px; 
-  height: 4px; 
-  border-radius: 50%; 
-  background: rgba(255,255,255,.2); 
-  transform: translate(-50%, -50%); 
-}
-
-.task-card {
-  position: absolute;
-  left: 3px; right: 3px;
-  padding: 6px;
-  border-radius: 8px;
-  background: #222629;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  z-index: 3;
-}
-
-.task-card::before { 
-  content: ""; 
-  position: absolute; 
-  left: 0; top: 0; bottom: 0; 
-  width: 3px; 
-  background: var(--green); 
-}
-
-.task-card .task-time { 
-  font-size: 9px; 
-  font-weight: 700;
-  color: var(--green); 
-  line-height: 1;
-}
-
-.task-card .task-title { 
-  margin-top: 3px; 
-  font-size: 10px; 
-  line-height: 1.2; 
-  font-weight: 600; 
-  color: #f0f2f0;
-  word-break: break-word; 
-  display: -webkit-box; 
-  -webkit-line-clamp: 2; 
-  -webkit-box-orient: vertical; 
-  overflow: hidden; 
-}
-
-.task-card.completed { 
-  opacity: 0.5;
-  background: #181b1d;
-}
-.task-card.completed .task-title { text-decoration: line-through; }
-
-.empty-day { 
-  position: absolute; 
-  top: 20px; left: 0; right: 0;
-  text-align: center; 
-  color: rgba(255,255,255,.12); 
-  font-size: 9px; 
-}
-
-.section-head { margin: 12px 2px 18px; }
-
-.task-form { display: grid; gap: 12px; }
-.field {
-  display: block;
-  padding: 12px 14px;
-  border-radius: var(--radius-lg);
-  background: var(--panel);
-  border: 1px solid rgba(255,255,255,.05);
-}
-.field span { display: block; color: var(--muted); font-size: 11px; margin-bottom: 6px; }
-.field input {
-  width: 100%; padding: 0; border: 0; outline: none; background: transparent; color: var(--text);
-  font-size: 16px; color-scheme: dark;
-}
-.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-.primary-btn {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  width: 100%; padding: 15px; border-radius: var(--radius-lg);
-  background: var(--green); color: #101311;
-  font-size: 15px; font-weight: 700;
-}
-
-.all-tasks { display: grid; gap: 10px; }
-.task-row {
-  display: flex; align-items: center; gap: 12px; padding: 12px 14px;
-  border-radius: var(--radius-lg); background: var(--panel);
-  border: 1px solid rgba(255,255,255,.05);
-}
-.task-row.completed .row-title { text-decoration: line-through; color: var(--muted); }
-.row-check { width: 24px; height: 24px; border-radius: 50%; border: 1px solid rgba(255,255,255,.2); display: grid; place-items: center; color: var(--green); }
-.task-row.completed .row-check { background: var(--green); color: #000; border-color: var(--green); }
-.row-main { flex: 1; min-width: 0; }
-.row-title { font-size: 14px; font-weight: 600; }
-.row-time { font-size: 11px; color: var(--muted); margin-top: 2px; }
-.row-delete { background: transparent; color: var(--muted); font-size: 18px; padding: 4px 8px; }
-
-.tabbar {
-  position: fixed; z-index: 50; left: 50%; bottom: calc(12px + var(--safe-bottom)); transform: translateX(-50%);
-  width: min(420px, calc(100vw - 24px));
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;
-  padding: 6px; border-radius: 20px;
-  background: rgba(22, 25, 27, 0.95);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,.08);
-  box-shadow: var(--shadow);
-}
-.tab { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 4px; border-radius: 14px; color: #7f8785; font-size: 10px; font-weight: 700; }
-.tab.is-active { background: rgba(255,255,255,.08); color: #fff; }
-
-.toast {
-  position: fixed; z-index: 80; left: 50%; bottom: calc(80px + var(--safe-bottom)); transform: translate(-50%, 10px); opacity: 0; pointer-events: none;
-  padding: 10px 16px; border-radius: 999px; background: #222925; color: #dff5e5; font-size: 12px; font-weight: 600;
-  transition: all .2s ease; border: 1px solid var(--green);
-}
-.toast.show { opacity: 1; transform: translate(-50%, 0); }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>План недели</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #0f1112;
+      color: #f5f6f4;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 20px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 900px;
+      margin: 0 auto 20px;
+    }
+    .time-badge {
+      background: #1b1f21;
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      color: #58d67b;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      max-width: 900px;
+      margin: 0 auto;
+      background: #16191b;
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.05);
+      min-height: 400px;
+    }
+    .day-col {
+      background: #1f2326;
+      border-radius: 8px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .day-title { font-size: 11px; color: #888; text-transform: uppercase; }
+    .day-num { font-size: 16px; font-weight: bold; margin: 4px 0 10px; }
+    .day-col.today { border: 1px solid #58d67b; background: #1a2a20; }
+    .day-col.today .day-num { color: #58d67b; }
+    .tasks-list { width: 100%; display: flex; flex-direction: column; gap: 6px; }
+    .task-item {
+      background: #2a2f33;
+      padding: 6px;
+      border-radius: 6px;
+      font-size: 11px;
+      border-left: 3px solid #58d67b;
+      cursor: pointer;
+    }
+    .task-item.done { opacity: 0.4; text-decoration: line-through; }
+    .task-time { font-size: 9px; color: #58d67b; font-weight: bold; }
+  </style>
 </head>
 <body>
-  <div class="app-shell">
-    <header class="topbar">
-      <div>
-        <div class="eyebrow" id="todayLabel">Сегодня</div>
-        <h1 id="weekTitle">Эта неделя</h1>
-      </div>
-      <div class="live-pill">
-        <span class="live-dot"></span>
-        <span id="clock">--:--</span>
-      </div>
-    </header>
 
-    <main class="content">
-      <section class="view is-active" id="view-week">
-        <div class="week-meta">
-          <div class="week-range" id="weekRange">—</div>
-          <div class="week-hint">клик на задачу — отметить</div>
-        </div>
-        <div class="week-board-wrap">
-          <div class="week-board" id="weekBoard"></div>
-        </div>
-      </section>
-
-      <section class="view" id="view-add">
-        <div class="section-head">
-          <div class="eyebrow">Новая задача</div>
-          <h2>Добавить в план</h2>
-        </div>
-        <form id="taskForm" class="task-form">
-          <label class="field">
-            <span>Название</span>
-            <input id="taskTitle" type="text" placeholder="Введите название..." required>
-          </label>
-          <div class="field-row">
-            <label class="field">
-              <span>Дата</span>
-              <input id="taskDate" type="date" required>
-            </label>
-            <label class="field">
-              <span>Время</span>
-              <input id="taskTime" type="time" required>
-            </label>
-          </div>
-          <button class="primary-btn" type="submit">Сохранить задачу</button>
-        </form>
-      </section>
-
-      <section class="view" id="view-tasks">
-        <div class="section-head">
-          <div class="eyebrow">Все задачи</div>
-          <h2>Список дел</h2>
-        </div>
-        <div id="allTasks" class="all-tasks"></div>
-      </section>
-    </main>
-
-    <nav class="tabbar">
-      <button class="tab is-active" data-target="week">Неделя</button>
-      <button class="tab" data-target="add">Добавить</button>
-      <button class="tab" data-target="tasks">Задачи</button>
-    </nav>
-
-    <div class="toast" id="toast">Готово</div>
+  <div class="header">
+    <div>
+      <div style="font-size: 11px; color: #888; text-transform: uppercase;">Сегодня</div>
+      <h1 id="week-date-heading" style="font-size: 24px;">Загрузка...</h1>
+    </div>
+    <div class="time-badge" id="clock-display">00:00</div>
   </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const STORAGE_KEY = 'plan-tasks-v2';
-  const DAY_NAMES = ['ПН','ВТ','СР','ЧТ','ПТ','СБ','ВС'];
-  const MONTHS = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+  <div class="grid" id="week-grid"></div>
 
-  let tasks = [];
-  try {
-    tasks = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-  } catch(e) { tasks = []; }
-
-  function save() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-  }
-
-  function pad(n) { return String(n).padStart(2, '0'); }
-
-  function isoDate(d) {
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-  }
-
-  function getMonday(d) {
-    const date = new Date(d);
-    const day = date.getDay();
-    const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-    return new Date(date.setDate(diff));
-  }
-
-  function addDays(d, days) {
-    const res = new Date(d);
-    res.setDate(res.getDate() + days);
-    return res;
-  }
-
-  function updateClock() {
-    const now = new Date();
-    document.getElementById('clock').textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
-  }
-
-  function renderHeader() {
-    const now = new Date();
-    const monday = getMonday(now);
-    const sunday = addDays(monday, 6);
-
-    document.getElementById('todayLabel').textContent = `Сегодня · ${now.getDate()} ${MONTHS[now.getMonth()]}`;
-    document.getElementById('weekRange').textContent = `${monday.getDate()} ${MONTHS[monday.getMonth()]} — ${sunday.getDate()} ${MONTHS[sunday.getMonth()]}`;
-  }
-
-  function renderWeek() {
-    const board = document.getElementById('weekBoard');
-    board.innerHTML = '';
-    const now = new Date();
-    const monday = getMonday(now);
-    const todayStr = isoDate(now);
-
-    for (let i = 0; i < 7; i++) {
-      const curDate = addDays(monday, i);
-      const curIso = isoDate(curDate);
-      const isToday = curIso === todayStr;
-
-      const col = document.createElement('div');
-      col.className = `day-column${isToday ? ' today' : ''}`;
-
-      col.innerHTML = `
-        <div class="day-head">
-          <div class="day-name">${DAY_NAMES[i]}</div>
-          <div class="day-number">${curDate.getDate()}</div>
-        </div>
-        <div class="day-track" id="track-${curIso}"></div>
-      `;
-
-      board.appendChild(col);
-
-      const track = col.querySelector('.day-track');
-
-      // Метки часов
-      for (let h = 0; h < 24; h += 4) {
-        const dot = document.createElement('div');
-        dot.className = 'hour-dot';
-        dot.style.top = `${(h / 24) * 100}%`;
-        track.appendChild(dot);
+  <script>
+    function initApp() {
+      // 1. Часы
+      function checkTime() {
+        var now = new Date();
+        var h = String(now.getHours()).padStart(2, '0');
+        var m = String(now.getMinutes()).padStart(2, '0');
+        document.getElementById('clock-display').innerText = h + ':' + m;
       }
+      checkTime();
+      setInterval(checkTime, 1000);
 
-      // Задачи дня
-      const dayTasks = tasks.filter(t => t.date === curIso);
-      if (!dayTasks.length) {
-        const empty = document.createElement('div');
-        empty.className = 'empty-day';
-        empty.textContent = 'нет дел';
-        track.appendChild(empty);
-      } else {
-        dayTasks.forEach(task => {
-          const card = document.createElement('div');
-          const [hh, mm] = task.time.split(':').map(Number);
-          const topPercent = ((hh * 60 + mm) / 1440) * 100;
-          
-          card.className = `task-card${task.completed ? ' completed' : ''}`;
-          card.style.top = `${Math.min(topPercent, 88)}%`;
-          card.innerHTML = `
-            <div class="task-time">${task.time}</div>
-            <div class="task-title">${task.title}</div>
-          `;
+      // 2. Дни недели
+      var daysNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+      var today = new Date();
+      
+      // Находим понедельник
+      var dayOfWeek = today.getDay(); // 0 - Вс, 1 - Пн ...
+      var diffToMon = (dayOfWeek === 0 ? -6 : 1 - dayOfWeek);
+      var monday = new Date(today);
+      monday.setDate(today.getDate() + diffToMon);
 
-          card.addEventListener('click', () => {
-            task.completed = !task.completed;
-            save();
-            renderWeek();
-            renderTasksList();
-            showToast(task.completed ? 'Выполнено!' : 'Возвращено');
-          });
+      var grid = document.getElementById('week-grid');
+      grid.innerHTML = '';
 
-          track.appendChild(card);
-        });
+      document.getElementById('week-date-heading').innerText = 'Эта неделя';
+
+      for (var i = 0; i < 7; i++) {
+        var d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+
+        var isToday = d.toDateString() === today.toDateString();
+        
+        var col = document.createElement('div');
+        col.className = 'day-col' + (isToday ? ' today' : '');
+        
+        col.innerHTML = 
+          '<div class="day-title">' + daysNames[i] + '</div>' +
+          '<div class="day-num">' + d.getDate() + '</div>' +
+          '<div class="tasks-list"></div>';
+
+        grid.appendChild(col);
       }
     }
-  }
 
-  function renderTasksList() {
-    const list = document.getElementById('allTasks');
-    list.innerHTML = '';
-
-    if (!tasks.length) {
-      list.innerHTML = '<div style="text-align:center; color: var(--muted); padding: 40px 0;">Список задач пуст</div>';
-      return;
+    // Запуск строго при загрузке
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initApp);
+    } else {
+      initApp();
     }
-
-    const sorted = [...tasks].sort((a,b) => `${a.date}T${a.time}`.localeCompare(`${b.date}T${b.time}`));
-
-    sorted.forEach(task => {
-      const row = document.createElement('div');
-      row.className = `task-row${task.completed ? ' completed' : ''}`;
-      row.innerHTML = `
-        <div class="row-check">${task.completed ? '✓' : ''}</div>
-        <div class="row-main">
-          <div class="row-title">${task.title}</div>
-          <div class="row-time">${task.date} в ${task.time}</div>
-        </div>
-        <button class="row-delete">×</button>
-      `;
-
-      row.querySelector('.row-check').addEventListener('click', () => {
-        task.completed = !task.completed;
-        save();
-        renderWeek();
-        renderTasksList();
-      });
-
-      row.querySelector('.row-delete').addEventListener('click', () => {
-        tasks = tasks.filter(t => t.id !== task.id);
-        save();
-        renderWeek();
-        renderTasksList();
-        showToast('Удалено');
-      });
-
-      list.appendChild(row);
-    });
-  }
-
-  function showToast(msg) {
-    const toast = document.getElementById('toast');
-    toast.textContent = msg;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 1500);
-  }
-
-  // Табы
-  document.querySelectorAll('.tab').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.tab').forEach(b => b.classList.remove('is-active'));
-      document.querySelectorAll('.view').forEach(v => v.classList.remove('is-active'));
-      btn.classList.add('is-active');
-      document.getElementById(`view-${btn.dataset.target}`).classList.add('is-active');
-    });
-  });
-
-  // Форма
-  const form = document.getElementById('taskForm');
-  const now = new Date();
-  document.getElementById('taskDate').value = isoDate(now);
-  document.getElementById('taskTime').value = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
-
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-    const title = document.getElementById('taskTitle').value.trim();
-    const date = document.getElementById('taskDate').value;
-    const time = document.getElementById('taskTime').value;
-
-    if (!title || !date || !time) return;
-
-    tasks.push({
-      id: Date.now().toString(),
-      title, date, time,
-      completed: false
-    });
-
-    save();
-    renderWeek();
-    renderTasksList();
-    document.getElementById('taskTitle').value = '';
-    showToast('Добавлено');
-  });
-
-  // Инициализация
-  updateClock();
-  renderHeader();
-  renderWeek();
-  renderTasksList();
-  setInterval(updateClock, 10000);
-});
-</script>
+  </script>
 </body>
 </html>
